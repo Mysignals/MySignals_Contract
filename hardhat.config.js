@@ -1,10 +1,10 @@
-require("@nomiclabs/hardhat-waffle")
-require("@nomiclabs/hardhat-etherscan")
-require("hardhat-deploy")
-require("solidity-coverage")
-require("hardhat-gas-reporter")
-require("hardhat-contract-sizer")
-require("dotenv").config()
+require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-etherscan");
+require("hardhat-deploy");
+require("solidity-coverage");
+require("hardhat-gas-reporter");
+require("hardhat-contract-sizer");
+require("dotenv").config();
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -13,19 +13,24 @@ require("dotenv").config()
 const MAINNET_RPC_URL =
     process.env.MAINNET_RPC_URL ||
     process.env.ALCHEMY_MAINNET_RPC_URL ||
-    "https://eth-mainnet.alchemyapi.io/v2/your-api-key"
+    "https://eth-mainnet.alchemyapi.io/v2/your-api-key";
 const GOERLI_RPC_URL =
-    process.env.GOERLI_RPC_URL || "https://eth-goerli.alchemyapi.io/v2/your-api-key"
+    process.env.GOERLI_RPC_URL || "https://eth-goerli.alchemyapi.io/v2/your-api-key";
 const POLYGON_MAINNET_RPC_URL =
-    process.env.POLYGON_MAINNET_RPC_URL || "https://polygon-mainnet.alchemyapi.io/v2/your-api-key"
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x"
+    process.env.POLYGON_MAINNET_RPC_URL ||
+    "https://polygon-mainnet.alchemyapi.io/v2/your-api-key";
+
+const BSCCHAINURL = process.env.BSCCHAINURL || "";
+const BSCTESTCHAINURL = process.env.BSCTESTCHAINURL || "";
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "0x";
 // optional
-const MNEMONIC = process.env.MNEMONIC || "your mnemonic"
+const MNEMONIC = process.env.MNEMONIC || "your mnemonic";
 
 // Your API key for Etherscan, obtain one at https://etherscan.io/
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "Your etherscan API key"
-const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key"
-const REPORT_GAS = process.env.REPORT_GAS || false
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API || "Your etherscan API key";
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || "Your polygonscan API key";
+const BSCSCAN_API = process.env.BSCSCAN_API || "Your BSCScan Api Key";
+const REPORT_GAS = process.env.REPORT_GAS || false;
 
 module.exports = {
     defaultNetwork: "hardhat",
@@ -62,6 +67,20 @@ module.exports = {
             saveDeployments: true,
             chainId: 1,
         },
+        bsc: {
+            url: BSCCHAINURL,
+            accounts: [PRIVATE_KEY],
+            chainId: 56,
+            blockConfirmations: 3,
+            saveDeployments: true,
+        },
+        bsctest: {
+            url: BSCTESTCHAINURL,
+            accounts: [PRIVATE_KEY],
+            chainId: 97,
+            blockConfirmations: 3,
+            saveDeployments: true,
+        },
         polygon: {
             url: POLYGON_MAINNET_RPC_URL,
             accounts: PRIVATE_KEY !== undefined ? [PRIVATE_KEY] : [],
@@ -75,6 +94,8 @@ module.exports = {
         apiKey: {
             goerli: ETHERSCAN_API_KEY,
             polygon: POLYGONSCAN_API_KEY,
+            bsc: BSCSCAN_API,
+            bsctest: BSCSCAN_API,
         },
     },
     gasReporter: {
@@ -116,4 +137,4 @@ module.exports = {
     mocha: {
         timeout: 500000, // 500 seconds max for running tests
     },
-}
+};
