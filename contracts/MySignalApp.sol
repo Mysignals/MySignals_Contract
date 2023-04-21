@@ -136,19 +136,19 @@ contract MySignalApp {
         emit FallbackChange(oldAddress, _addr);
     }
 
-    function getFee()external view returns(uint256){
+    function getFee() external view returns (uint256) {
         return s_fees;
     }
 
-    function getRegistrarBalance()external view returns(uint256){
+    function getRegistrarBalance() external view returns (uint256) {
         return s_registrarBalance;
     }
 
-    function getFallbacks()external view returns(uint256){
+    function getFallbacks() external view returns (uint256) {
         return s_fallbacks;
     }
 
-    function getProviderBalance(address _addr)external view returns(uint256){
+    function getProviderBalance(address _addr) external view returns (uint256) {
         return s_providerBalance[_addr];
     }
 }
