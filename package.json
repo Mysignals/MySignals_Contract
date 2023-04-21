@@ -2,13 +2,7 @@
     "name": "nodejs",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "author": "Godand",
     "dependencies": {
         "@types/node": "^18.0.6",
         "hardhat-shorthand": "^1.0.0",
@@ -33,6 +27,7 @@
         "solidity-coverage": "^0.8.2"
     },
     "scripts": {
-        "format": "prettier -w ."
+        "format": "prettier -w .",
+        "slither": "slither ./contracts/MySignalApp.sol --solc-remaps '@openzeppelin=node_modules/@openzeppelin @chainlink=node_modules/@chainlink' --exclude naming-convention,external-functions,low-level-calls"
     }
 }
