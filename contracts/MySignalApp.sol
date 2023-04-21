@@ -24,14 +24,23 @@ contract MySignalApp {
     mapping (address=>bool)private s_validProvider;
     mapping (address=>uint256)private s_providerBalance;
 
-    event CompensateProvide(address indexed provider,uint256 indexed amount,uint256 indexed signalId);
+    event CompensateProvider(address indexed provider,uint256 indexed amount,uint256 indexed signalId);
+    event RegistrarChange(address oldAddress,address newAddress);
+    event FallbackChange(address oldAddress,address newAddress);
+    event FeeChange(uint256 oldFee,uint256 newFee);
+    event ProviderAdded(address provider);
 
     modifier onlyProvider(){
 
         if (s_validProvider[msg.sender]){
             _;
-        }
-        revert MySignalApp__NotProvider();
+        }else revert MySignalApp__NotProvider();
+        
+    }
+
+    modifier onlyRegistrar(){
+        if(msg.sender!=s_registrar) revert MySignalApp__NotRegistrar();
+        _;
     }
 
     constructor(address _registrar, address _fallbackAddress, uint256 _fee,uint256 _payPercent) {
@@ -54,9 +63,14 @@ contract MySignalApp {
             uint256 fee= (msg.value*i_payPercent)/100;
             s_providerBalance[_provider]+=msg.value-fee;
             s_fees+=fee;
-            emit CompensateProvide(_provider,msg.value-fee,_signalId);
+            emit CompensateProvider(_provider,msg.value-fee,_signalId);
         }
         revert MySignalApp__InvalidProviderOrFee();
+    }
+
+    function addProvider(address _provider)external onlyRegistrar{
+        s_validProvider[_provider]=true;
+        emit ProviderAdded(_provider);
     }
 
     function providerWithdraw(uint256 _amount)external onlyProvider{
@@ -67,8 +81,8 @@ contract MySignalApp {
         
     }
 
-    function registrarWithdraw(uint256 _amount)external{
-        if(msg.sender!=s_registrar) revert MySignalApp__NotRegistrar();
+    function registrarWithdraw(uint256 _amount)external onlyRegistrar{
+        
         if (_amount>s_registrarBalance)revert MySignalApp__InsufficientBalance();
 
         s_registrarBalance-=_amount;
@@ -83,5 +97,24 @@ contract MySignalApp {
         s_fallbacks-=_amount;
         (bool sent, )=payable(msg.sender).call{value:_amount}("");
         if (!sent) revert MySignalApp__TransferFailed();
+    }
+
+    function changeFee(uint256 _fee)external onlyRegistrar{
+        uint256 oldFee=s_fees;
+        s_fees=_fee;
+        emit FeeChange(oldFee,_fee);
+    }
+
+    function changeRegistrar(address _addr)external onlyRegistrar{
+        address oldAddress= s_registrar;
+        s_registrar=_addr;
+        emit RegistrarChange(oldAddress,_addr);
+    }
+
+    function changeFallback(address _addr)external {
+        if(msg.sender!=s_fallbackAddress) revert MySignalApp__NotFallback();
+        address oldAddress=s_fallbackAddress;
+        s_fallbackAddress=_addr;
+        emit FallbackChange(oldAddress,_addr);
     }
 }
