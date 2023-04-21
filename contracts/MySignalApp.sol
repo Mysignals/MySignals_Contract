@@ -36,7 +36,8 @@ contract MySignalApp {
     modifier onlyProvider() {
         if (s_validProvider[msg.sender]) {
             _;
-        } else revert MySignalApp__NotProvider();
+        }
+        revert MySignalApp__NotProvider();
     }
 
     modifier onlyRegistrar() {
@@ -44,7 +45,12 @@ contract MySignalApp {
         _;
     }
 
-    constructor(address _registrar, address _fallbackAddress, uint256 _fee, uint256 _payPercent) {
+    constructor(
+        address _registrar,
+        address _fallbackAddress,
+        uint256 _fee,
+        uint256 _payPercent
+    ) {
         s_registrar = _registrar;
         s_fallbackAddress = _fallbackAddress;
         s_fees = _fee;
@@ -85,7 +91,8 @@ contract MySignalApp {
     }
 
     function providerWithdraw(uint256 _amount) external onlyProvider {
-        if (_amount > s_providerBalance[msg.sender]) revert MySignalApp__InsufficientBalance();
+        if (_amount > s_providerBalance[msg.sender])
+            revert MySignalApp__InsufficientBalance();
         s_providerBalance[msg.sender] -= _amount;
         (bool sent, ) = payable(msg.sender).call{value: _amount}("");
         if (!sent) revert MySignalApp__TransferFailed();
