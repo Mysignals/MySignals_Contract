@@ -6,13 +6,15 @@ error MySignalApp__NotProvider();
 contract MySignalApp {
 
 
-    uint256 public s_registrarBalance;
-    uint256 public s_fee;
+    uint256 private s_registrarBalance;
+    uint256 private s_fallbacks;
+    uint256 private s_fee;
 
-    address public s_registrar;
+    address private s_registrar;
+    address private s_fallbackAddress;
 
-    mapping (address=>bool)public s_validProvider;
-    mapping (address=>uint256)public s_providerBalance;
+    mapping (address=>bool)private s_validProvider;
+    mapping (address=>uint256)private s_providerBalance;
 
     modifier onlyProvider(){
 
@@ -22,8 +24,19 @@ contract MySignalApp {
         revert MySignalApp__NotProvider();
     }
 
-    constructor(address _registrar, uint256 _fee) {
+    constructor(address _registrar, address _fallbackAddress, uint256 _fee) {
         s_registrar=_registrar;
+        s_fallbackAddress=_fallbackAddress;
         s_fee=_fee;
     }
+
+    fallback()external payable{
+        s_fallbacks+=msg.value;
+    }
+
+    receive()external payable{
+        s_fallbacks+=msg.value;
+    }
+
+    
 }
