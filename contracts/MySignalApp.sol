@@ -25,7 +25,8 @@ contract MySignalApp {
     event CompensateProvider(
         address indexed provider,
         uint256 indexed amount,
-        uint256 indexed signalId
+        uint256 indexed signalId,
+        uint256 indexed userId
     );
     event AddressProviderChange(address oldAddress, address newAddress);
     event RegistrarChange(address oldAddress, address newAddress);
@@ -65,12 +66,12 @@ contract MySignalApp {
         s_fallbacks += msg.value;
     }
 
-    function payProvider(address _provider, uint256 _signalId) external payable {
-        if (msg.value == s_fees && s_validProvider[_provider]) {
+    function payProvider(address _provider, uint256 _signalId,uint256 _userId) external payable {
+        if ((msg.value == s_fees) && s_validProvider[_provider]) {
             uint256 fee = (msg.value * i_payPercent) / 100;
             s_providerBalance[_provider] += msg.value - fee;
             s_fees += fee;
-            emit CompensateProvider(_provider, msg.value - fee, _signalId);
+            emit CompensateProvider(_provider, msg.value - fee, _signalId,_userId);
         }
         revert MySignalApp__InvalidProviderOrFee();
     }
