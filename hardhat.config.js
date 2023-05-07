@@ -95,7 +95,7 @@ module.exports = {
             goerli: ETHERSCAN_API_KEY,
             polygon: POLYGONSCAN_API_KEY,
             bsc: BSCSCAN_API,
-            bsctest: BSCSCAN_API,
+            bscTestnet: BSCSCAN_API,
         },
     },
     gasReporter: {

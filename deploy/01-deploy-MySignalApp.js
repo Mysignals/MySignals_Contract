@@ -3,7 +3,7 @@ const { verify } = require("../utils/verify");
 const { developmentChains, networkConfig } = require("../helper-hardhat-config");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
-    const deployer = await getNamedAccounts();
+    const {deployer} = await getNamedAccounts();
     const { deploy, log } = deployments;
     const chainId = network.config.chainId;
 
