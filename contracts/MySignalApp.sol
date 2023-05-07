@@ -35,10 +35,10 @@ contract MySignalApp {
     event ProviderAdded(address provider);
 
     modifier onlyProvider() {
-        if (s_validProvider[msg.sender]) {
-            _;
+        if (!s_validProvider[msg.sender]) {
+            revert MySignalApp__NotProvider();
         }
-        revert MySignalApp__NotProvider();
+        _;
     }
 
     modifier onlyRegistrar() {
