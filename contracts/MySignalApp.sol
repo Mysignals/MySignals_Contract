@@ -35,10 +35,10 @@ contract MySignalApp {
     event ProviderAdded(address provider);
 
     modifier onlyProvider() {
-        if (s_validProvider[msg.sender]) {
-            _;
+        if (!s_validProvider[msg.sender]) {
+            revert MySignalApp__NotProvider();
         }
-        revert MySignalApp__NotProvider();
+        _;
     }
 
     modifier onlyRegistrar() {
@@ -72,8 +72,8 @@ contract MySignalApp {
             s_providerBalance[_provider] += (msg.value - fee);
             s_registrarBalance += fee;
             emit CompensateProvider(_provider, msg.value - fee, _signalId,_userId);
-        }
-        revert MySignalApp__InvalidProviderOrFee();
+        }else{
+        revert MySignalApp__InvalidProviderOrFee();}
     }
 
     function addProvider(address _provider) external onlyRegistrar {
