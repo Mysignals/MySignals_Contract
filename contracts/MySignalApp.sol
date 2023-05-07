@@ -24,7 +24,7 @@ contract MySignalApp {
 
     event CompensateProvider(
         address indexed provider,
-        uint256 indexed amount,
+        uint256 amount,
         uint256 indexed signalId,
         uint256 indexed userId
     );
