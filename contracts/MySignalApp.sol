@@ -69,8 +69,8 @@ contract MySignalApp {
     function payProvider(address _provider, uint256 _signalId,uint256 _userId) external payable {
         if ((msg.value == s_fees) && s_validProvider[_provider]) {
             uint256 fee = (msg.value * i_payPercent) / 100;
-            s_providerBalance[_provider] += msg.value - fee;
-            s_fees += fee;
+            s_providerBalance[_provider] += (msg.value - fee);
+            s_registrarBalance += fee;
             emit CompensateProvider(_provider, msg.value - fee, _signalId,_userId);
         }
         revert MySignalApp__InvalidProviderOrFee();
