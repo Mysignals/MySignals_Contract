@@ -1,0 +1,632 @@
+{
+  "address": "0x394012A08733e1fd7E52917fC0c3Cb1E5E5cC302",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_registrar",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_fallbackAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_fee",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_payPercent",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__InsufficientBalance",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__InvalidAddress",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__InvalidFee",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__InvalidProviderOrFee",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__NotFallback",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__NotProvider",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__NotRegistrar",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "MySignalApp__TransferFailed",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "AddressProviderChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "provider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "signalId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "userId",
+          "type": "string"
+        }
+      ],
+      "name": "CompensateProvider",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "FallbackChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "oldFee",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newFee",
+          "type": "uint256"
+        }
+      ],
+      "name": "FeeChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "provider",
+          "type": "address"
+        }
+      ],
+      "name": "ProviderAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "provider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProviderWithdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldAddress",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newAddress",
+          "type": "address"
+        }
+      ],
+      "name": "RegistrarChange",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "userId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "SingleDeposit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "provider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "TransferDeposits",
+      "type": "event"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_provider",
+          "type": "address"
+        }
+      ],
+      "name": "addProvider",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "changeFallback",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_fee",
+          "type": "uint256"
+        }
+      ],
+      "name": "changeFee",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "changeRegistrar",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "fallbackWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getFallbacks",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_addr",
+          "type": "address"
+        }
+      ],
+      "name": "getProviderBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getRegistrarBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "i_payPercent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_provider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_signalId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_userId",
+          "type": "string"
+        }
+      ],
+      "name": "payProvider",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_newAddr",
+          "type": "address"
+        }
+      ],
+      "name": "providerChangeAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "providerWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "registrarWithdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_id",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_userId",
+          "type": "string"
+        }
+      ],
+      "name": "singleDeposit",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_provider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferDeposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "transactionHash": "0xfbb4dbe613152608f8d48434596e3489eddcc33a061b0d8f231628b95e10eaad",
+  "receipt": {
+    "to": null,
+    "from": "0x2D3780568E72EE39137b4D5b49f585fe559410Dc",
+    "contractAddress": "0x394012A08733e1fd7E52917fC0c3Cb1E5E5cC302",
+    "transactionIndex": 1,
+    "gasUsed": "1147580",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "blockHash": "0x6d7c2d423ab1fce06e1335d244b5a0d9a6d4e8dcc133f52f1e8a9c35c3fa298f",
+    "transactionHash": "0xfbb4dbe613152608f8d48434596e3489eddcc33a061b0d8f231628b95e10eaad",
+    "logs": [],
+    "blockNumber": 34895544,
+    "cumulativeGasUsed": "1428854",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x2D3780568E72EE39137b4D5b49f585fe559410Dc",
+    "0x2D3780568E72EE39137b4D5b49f585fe559410Dc",
+    "2000000000000000",
+    5
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "f7949699b52f05114deb182b7077b54f",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.18+commit.87f61d96\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_registrar\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_fallbackAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_payPercent\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"MySignalApp__InsufficientBalance\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__InvalidAddress\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__InvalidFee\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__InvalidProviderOrFee\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__NotFallback\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__NotProvider\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__NotRegistrar\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"MySignalApp__TransferFailed\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"AddressProviderChange\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"signalId\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"}],\"name\":\"CompensateProvider\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"FallbackChange\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"oldFee\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newFee\",\"type\":\"uint256\"}],\"name\":\"FeeChange\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"ProviderAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ProviderWithdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"oldAddress\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newAddress\",\"type\":\"address\"}],\"name\":\"RegistrarChange\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"id\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"SingleDeposit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"TransferDeposits\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_provider\",\"type\":\"address\"}],\"name\":\"addProvider\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"changeFallback\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"changeFee\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"changeRegistrar\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"fallbackWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getFallbacks\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getFee\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"getProviderBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getRegistrarBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"i_payPercent\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_provider\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_signalId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_userId\",\"type\":\"string\"}],\"name\":\"payProvider\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newAddr\",\"type\":\"address\"}],\"name\":\"providerChangeAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"providerWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"registrarWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_id\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_userId\",\"type\":\"string\"}],\"name\":\"singleDeposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_provider\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"transferDeposit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/MySignalApp.sol\":\"MySignalApp\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":20000},\"remappings\":[]},\"sources\":{\"contracts/MySignalApp.sol\":{\"content\":\"// SPDX-License-Identifier: SEE LICENSE IN LICENSE\\npragma solidity 0.8.18;\\n\\nerror MySignalApp__InvalidProviderOrFee();\\nerror MySignalApp__InsufficientBalance();\\nerror MySignalApp__TransferFailed();\\nerror MySignalApp__InvalidAddress();\\nerror MySignalApp__NotRegistrar();\\nerror MySignalApp__NotProvider();\\nerror MySignalApp__NotFallback();\\nerror MySignalApp__InvalidFee();\\n\\ncontract MySignalApp {\\n    uint256 private s_registrarBalance;\\n    uint256 private s_singleDepositBalance;\\n    uint256 private s_fallbacks;\\n    uint256 private s_fees;\\n    uint256 public immutable i_payPercent;\\n\\n    address private s_registrar;\\n    address private s_fallbackAddress;\\n\\n    mapping(address => bool) private s_validProvider;\\n    mapping(address => uint256) private s_providerBalance;\\n\\n    event CompensateProvider(\\n        address indexed provider,\\n        uint256 amount,\\n        uint256 indexed signalId,\\n        string indexed userId\\n    );\\n    event SingleDeposit(string indexed id, string indexed userId, uint256 amount);\\n    event AddressProviderChange(address oldAddress, address newAddress);\\n    event TransferDeposits(address indexed provider, uint256 amount);\\n    event ProviderWithdraw(address indexed provider, uint256 amount);\\n    event RegistrarChange(address oldAddress, address newAddress);\\n    event FallbackChange(address oldAddress, address newAddress);\\n    event FeeChange(uint256 oldFee, uint256 newFee);\\n    event ProviderAdded(address provider);\\n\\n    modifier onlyProvider() {\\n        if (!s_validProvider[msg.sender]) {\\n            revert MySignalApp__NotProvider();\\n        }\\n        _;\\n    }\\n\\n    modifier onlyRegistrar() {\\n        if (msg.sender != s_registrar) revert MySignalApp__NotRegistrar();\\n        _;\\n    }\\n\\n    constructor(\\n        address _registrar,\\n        address _fallbackAddress,\\n        uint256 _fee,\\n        uint256 _payPercent\\n    ) {\\n        s_registrar = _registrar;\\n        s_fallbackAddress = _fallbackAddress;\\n        s_fees = _fee;\\n        i_payPercent = _payPercent;\\n    }\\n\\n    fallback() external payable {\\n        s_fallbacks += msg.value;\\n    }\\n\\n    receive() external payable {\\n        s_fallbacks += msg.value;\\n    }\\n\\n    function payProvider(\\n        address _provider,\\n        uint256 _signalId,\\n        string calldata _userId\\n    ) external payable {\\n        if ((msg.value == s_fees) && s_validProvider[_provider]) {\\n            uint256 fee = (msg.value * i_payPercent) / 100;\\n            s_providerBalance[_provider] += (msg.value - fee);\\n            s_registrarBalance += fee;\\n            emit CompensateProvider(_provider, msg.value - fee, _signalId, _userId);\\n        } else {\\n            revert MySignalApp__InvalidProviderOrFee();\\n        }\\n    }\\n\\n    function singleDeposit(string calldata _id, string calldata _userId) external payable {\\n        if (msg.value == s_fees) {\\n            uint256 fee = (msg.value * i_payPercent) / 100;\\n            s_singleDepositBalance += (msg.value - fee);\\n            s_registrarBalance += fee;\\n            emit SingleDeposit(_id, _userId, msg.value - fee);\\n        } else {\\n            revert MySignalApp__InvalidFee();\\n        }\\n    }\\n\\n    function addProvider(address _provider) external onlyRegistrar {\\n        s_validProvider[_provider] = true;\\n        emit ProviderAdded(_provider);\\n    }\\n\\n    function providerChangeAddress(address _newAddr) external onlyProvider {\\n        uint256 oldAddressBalance = s_providerBalance[msg.sender];\\n        s_providerBalance[msg.sender] = 0;\\n        s_validProvider[msg.sender] = false;\\n        s_validProvider[_newAddr] = true;\\n        (bool sent, ) = payable(msg.sender).call{value: oldAddressBalance}(\\\"\\\");\\n        if (!sent) revert MySignalApp__TransferFailed();\\n        emit AddressProviderChange(msg.sender, _newAddr);\\n    }\\n\\n    function providerWithdraw(uint256 _amount) external onlyProvider {\\n        if (_amount > s_providerBalance[msg.sender])\\n            revert MySignalApp__InsufficientBalance();\\n        s_providerBalance[msg.sender] -= _amount;\\n        (bool sent, ) = payable(msg.sender).call{value: _amount}(\\\"\\\");\\n        if (!sent) revert MySignalApp__TransferFailed();\\n        emit ProviderWithdraw(msg.sender, _amount);\\n    }\\n\\n    function registrarWithdraw(uint256 _amount) external onlyRegistrar {\\n        if (_amount > s_registrarBalance) revert MySignalApp__InsufficientBalance();\\n\\n        s_registrarBalance -= _amount;\\n        (bool sent, ) = payable(msg.sender).call{value: _amount}(\\\"\\\");\\n        if (!sent) revert MySignalApp__TransferFailed();\\n    }\\n\\n    function transferDeposit(address _provider, uint256 _amount) external onlyRegistrar {\\n        if (!s_validProvider[_provider]) revert MySignalApp__NotProvider();\\n        if (_amount > s_singleDepositBalance) revert MySignalApp__InsufficientBalance();\\n\\n        s_singleDepositBalance -= _amount;\\n        (bool sent, ) = payable(_provider).call{value: _amount}(\\\"\\\");\\n        if (!sent) revert MySignalApp__TransferFailed();\\n        emit TransferDeposits(_provider, _amount);\\n    }\\n\\n    function fallbackWithdraw(uint256 _amount) external {\\n        if (msg.sender != s_fallbackAddress) revert MySignalApp__NotFallback();\\n        if (_amount > s_fallbacks) revert MySignalApp__InsufficientBalance();\\n\\n        s_fallbacks -= _amount;\\n        (bool sent, ) = payable(msg.sender).call{value: _amount}(\\\"\\\");\\n        if (!sent) revert MySignalApp__TransferFailed();\\n    }\\n\\n    function changeFee(uint256 _fee) external onlyRegistrar {\\n        uint256 oldFee = s_fees;\\n        s_fees = _fee;\\n        emit FeeChange(oldFee, _fee);\\n    }\\n\\n    function changeRegistrar(address _addr) external onlyRegistrar {\\n        if (_addr == address(0)) revert MySignalApp__InvalidAddress();\\n        address oldAddress = s_registrar;\\n        s_registrar = _addr;\\n        emit RegistrarChange(oldAddress, _addr);\\n    }\\n\\n    function changeFallback(address _addr) external {\\n        if (msg.sender != s_fallbackAddress) revert MySignalApp__NotFallback();\\n        if (_addr == address(0)) revert MySignalApp__InvalidAddress();\\n        address oldAddress = s_fallbackAddress;\\n        s_fallbackAddress = _addr;\\n        emit FallbackChange(oldAddress, _addr);\\n    }\\n\\n    function getFee() external view returns (uint256) {\\n        return s_fees;\\n    }\\n\\n    function getRegistrarBalance() external view returns (uint256) {\\n        return s_registrarBalance;\\n    }\\n\\n    function getFallbacks() external view returns (uint256) {\\n        return s_fallbacks;\\n    }\\n\\n    function getProviderBalance(address _addr) external view returns (uint256) {\\n        return s_providerBalance[_addr];\\n    }\\n}\\n\",\"keccak256\":\"0x7a76882458ad138efb0a489b58ede0ec598f903aaa77f2554d70954f73382110\",\"license\":\"SEE LICENSE IN LICENSE\"}},\"version\":1}",
+  "bytecode": "0x60a060405234801561001057600080fd5b506040516113a23803806113a283398101604081905261002f91610089565b600480546001600160a01b039586166001600160a01b03199182161790915560058054949095169316929092179092556003919091556080526100cc565b80516001600160a01b038116811461008457600080fd5b919050565b6000806000806080858703121561009f57600080fd5b6100a88561006d565b93506100b66020860161006d565b6040860151606090960151949790965092505050565b6080516112ad6100f56000396000818161026501528181610a730152610bcb01526112ad6000f3fe6080604052600436106100f75760003560e01c8063756882a31161008a5780638a3def65116100595780638a3def65146102ca5780639b2f9842146102ea5780639e2176f9146102ff578063ced72f871461031f57610116565b8063756882a31461022057806376b58810146102335780637d91eef214610253578063832eea0c1461028757610116565b806350f3dbec116100c657806350f3dbec146101ad578063576cf667146101cd5780636a1db1bf146101ed5780636d6b96011461020d57610116565b80631d7f80ae1461012857806325d638e51461014a5780632b96942b1461016d57806346e2577a1461018d57610116565b3661011657346002600082825461010e9190611058565b925050819055005b346002600082825461010e9190611058565b34801561013457600080fd5b5061014861014336600461109a565b610334565b005b34801561015657600080fd5b506002545b60405190815260200160405180910390f35b34801561017957600080fd5b506101486101883660046110bc565b6104bd565b34801561019957600080fd5b506101486101a836600461109a565b6105e7565b3480156101b957600080fd5b506101486101c83660046110d5565b6106bd565b3480156101d957600080fd5b506101486101e836600461109a565b6108ad565b3480156101f957600080fd5b506101486102083660046110bc565b6109d2565b61014861021b366004611148565b610a61565b61014861022e3660046111b4565b610b87565b34801561023f57600080fd5b5061014861024e36600461109a565b610cfd565b34801561025f57600080fd5b5061015b7f000000000000000000000000000000000000000000000000000000000000000081565b34801561029357600080fd5b5061015b6102a236600461109a565b73ffffffffffffffffffffffffffffffffffffffff1660009081526007602052604090205490565b3480156102d657600080fd5b506101486102e53660046110bc565b610e1a565b3480156102f657600080fd5b5060005461015b565b34801561030b57600080fd5b5061014861031a3660046110bc565b610eb8565b34801561032b57600080fd5b5060035461015b565b3360009081526006602052604090205460ff1661037d576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b336000818152600760209081526040808320805490849055600690925280832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090811690915573ffffffffffffffffffffffffffffffffffffffff86168452818420805490911660011790555190929083908381818185875af1925050503d806000811461042a576040519150601f19603f3d011682016040523d82523d6000602084013e61042f565b606091505b505090508061046a576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6040805133815273ffffffffffffffffffffffffffffffffffffffff851660208201527f5bbda34f4283e006dc680407c75f3f17c43d2869c203923c1331d3800398a71b910160405180910390a1505050565b60055473ffffffffffffffffffffffffffffffffffffffff16331461050e576040517f824f28fa00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60025481111561054a576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b806002600082825461055c9190611202565b9091555050604051600090339083908381818185875af1925050503d80600081146105a3576040519150601f19603f3d011682016040523d82523d6000602084013e6105a8565b606091505b50509050806105e3576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b5050565b60045473ffffffffffffffffffffffffffffffffffffffff163314610638576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff811660008181526006602090815260409182902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117905590519182527fae9c2c6481964847714ce58f65a7f6dcc41d0d8394449bacdf161b5920c4744a910160405180910390a150565b60045473ffffffffffffffffffffffffffffffffffffffff16331461070e576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff821660009081526006602052604090205460ff1661076d576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001548111156107a9576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600160008282546107bb9190611202565b909155505060405160009073ffffffffffffffffffffffffffffffffffffffff84169083908381818185875af1925050503d8060008114610818576040519150601f19603f3d011682016040523d82523d6000602084013e61081d565b606091505b5050905080610858576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b8273ffffffffffffffffffffffffffffffffffffffff167fa014a94942f6e08c8d273b8c817d0a40902e24ad69524f015247f12f839210b9836040516108a091815260200190565b60405180910390a2505050565b60055473ffffffffffffffffffffffffffffffffffffffff1633146108fe576040517f824f28fa00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff811661094b576040517f247e2d4a00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6005805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff000000000000000000000000000000000000000083168117909355604080519190921680825260208201939093527f9cfd98ce2b0572a77cf9d71bacef7955c853a989204db1ce37fbee74f280d35b91015b60405180910390a15050565b60045473ffffffffffffffffffffffffffffffffffffffff163314610a23576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600380549082905560408051828152602081018490527fa995ac7c2dc5fdc05b41983e69d4d9fbd224a8528bc7d86eabfd533cd3ca449791016109c6565b6003543403610b4f5760006064610a987f000000000000000000000000000000000000000000000000000000000000000034611215565b610aa2919061122c565b9050610aae8134611202565b60016000828254610abf9190611058565b9250508190555080600080828254610ad79190611058565b9091555050604051610aec9084908490611267565b60405180910390208585604051610b04929190611267565b6040519081900390207f6052e7f5bf11db6ab3cca1d67770783fdc2e8a693698332ecc2e1ada63ea86f4610b388434611202565b60405190815260200160405180910390a350610b81565b6040517fad5197a400000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b50505050565b60035434148015610bbd575073ffffffffffffffffffffffffffffffffffffffff841660009081526006602052604090205460ff165b15610ccb5760006064610bf07f000000000000000000000000000000000000000000000000000000000000000034611215565b610bfa919061122c565b9050610c068134611202565b73ffffffffffffffffffffffffffffffffffffffff861660009081526007602052604081208054909190610c3b908490611058565b9250508190555080600080828254610c539190611058565b9091555050604051610c689084908490611267565b6040519081900390208473ffffffffffffffffffffffffffffffffffffffff87167fe44d231cb2ba9f7b57703db70ddadfa670b4d6f5905b2e20e8c876f47cadeb7a610cb48534611202565b60405190815260200160405180910390a450610b81565b6040517f6a4ea17100000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60045473ffffffffffffffffffffffffffffffffffffffff163314610d4e576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff8116610d9b576040517f247e2d4a00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6004805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff000000000000000000000000000000000000000083168117909355604080519190921680825260208201939093527faa91ef4e7d0a22f1b92d0eb50b6e60b1034e11c61318a81e150143d5715ebb3991016109c6565b60045473ffffffffffffffffffffffffffffffffffffffff163314610e6b576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600054811115610ea7576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b8060008082825461055c9190611202565b3360009081526006602052604090205460ff16610f01576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b33600090815260076020526040902054811115610f4a576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b3360009081526007602052604081208054839290610f69908490611202565b9091555050604051600090339083908381818185875af1925050503d8060008114610fb0576040519150601f19603f3d011682016040523d82523d6000602084013e610fb5565b606091505b5050905080610ff0576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60405182815233907f12e802b6ed6e970b958406df898001b6336cab376c17f335ea72d122ecdf3c2d9060200160405180910390a25050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b8082018082111561106b5761106b611029565b92915050565b803573ffffffffffffffffffffffffffffffffffffffff8116811461109557600080fd5b919050565b6000602082840312156110ac57600080fd5b6110b582611071565b9392505050565b6000602082840312156110ce57600080fd5b5035919050565b600080604083850312156110e857600080fd5b6110f183611071565b946020939093013593505050565b60008083601f84011261111157600080fd5b50813567ffffffffffffffff81111561112957600080fd5b60208301915083602082850101111561114157600080fd5b9250929050565b6000806000806040858703121561115e57600080fd5b843567ffffffffffffffff8082111561117657600080fd5b611182888389016110ff565b9096509450602087013591508082111561119b57600080fd5b506111a8878288016110ff565b95989497509550505050565b600080600080606085870312156111ca57600080fd5b6111d385611071565b935060208501359250604085013567ffffffffffffffff8111156111f657600080fd5b6111a8878288016110ff565b8181038181111561106b5761106b611029565b808202811582820484141761106b5761106b611029565b600082611262577f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b500490565b818382376000910190815291905056fea2646970667358221220420cd1b9f099c23247a23862bdcb3289c8ffd9a567bfc382ead059d2f072ab0664736f6c63430008120033",
+  "deployedBytecode": "0x6080604052600436106100f75760003560e01c8063756882a31161008a5780638a3def65116100595780638a3def65146102ca5780639b2f9842146102ea5780639e2176f9146102ff578063ced72f871461031f57610116565b8063756882a31461022057806376b58810146102335780637d91eef214610253578063832eea0c1461028757610116565b806350f3dbec116100c657806350f3dbec146101ad578063576cf667146101cd5780636a1db1bf146101ed5780636d6b96011461020d57610116565b80631d7f80ae1461012857806325d638e51461014a5780632b96942b1461016d57806346e2577a1461018d57610116565b3661011657346002600082825461010e9190611058565b925050819055005b346002600082825461010e9190611058565b34801561013457600080fd5b5061014861014336600461109a565b610334565b005b34801561015657600080fd5b506002545b60405190815260200160405180910390f35b34801561017957600080fd5b506101486101883660046110bc565b6104bd565b34801561019957600080fd5b506101486101a836600461109a565b6105e7565b3480156101b957600080fd5b506101486101c83660046110d5565b6106bd565b3480156101d957600080fd5b506101486101e836600461109a565b6108ad565b3480156101f957600080fd5b506101486102083660046110bc565b6109d2565b61014861021b366004611148565b610a61565b61014861022e3660046111b4565b610b87565b34801561023f57600080fd5b5061014861024e36600461109a565b610cfd565b34801561025f57600080fd5b5061015b7f000000000000000000000000000000000000000000000000000000000000000081565b34801561029357600080fd5b5061015b6102a236600461109a565b73ffffffffffffffffffffffffffffffffffffffff1660009081526007602052604090205490565b3480156102d657600080fd5b506101486102e53660046110bc565b610e1a565b3480156102f657600080fd5b5060005461015b565b34801561030b57600080fd5b5061014861031a3660046110bc565b610eb8565b34801561032b57600080fd5b5060035461015b565b3360009081526006602052604090205460ff1661037d576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b336000818152600760209081526040808320805490849055600690925280832080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0090811690915573ffffffffffffffffffffffffffffffffffffffff86168452818420805490911660011790555190929083908381818185875af1925050503d806000811461042a576040519150601f19603f3d011682016040523d82523d6000602084013e61042f565b606091505b505090508061046a576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6040805133815273ffffffffffffffffffffffffffffffffffffffff851660208201527f5bbda34f4283e006dc680407c75f3f17c43d2869c203923c1331d3800398a71b910160405180910390a1505050565b60055473ffffffffffffffffffffffffffffffffffffffff16331461050e576040517f824f28fa00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60025481111561054a576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b806002600082825461055c9190611202565b9091555050604051600090339083908381818185875af1925050503d80600081146105a3576040519150601f19603f3d011682016040523d82523d6000602084013e6105a8565b606091505b50509050806105e3576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b5050565b60045473ffffffffffffffffffffffffffffffffffffffff163314610638576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff811660008181526006602090815260409182902080547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0016600117905590519182527fae9c2c6481964847714ce58f65a7f6dcc41d0d8394449bacdf161b5920c4744a910160405180910390a150565b60045473ffffffffffffffffffffffffffffffffffffffff16331461070e576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff821660009081526006602052604090205460ff1661076d576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6001548111156107a9576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b80600160008282546107bb9190611202565b909155505060405160009073ffffffffffffffffffffffffffffffffffffffff84169083908381818185875af1925050503d8060008114610818576040519150601f19603f3d011682016040523d82523d6000602084013e61081d565b606091505b5050905080610858576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b8273ffffffffffffffffffffffffffffffffffffffff167fa014a94942f6e08c8d273b8c817d0a40902e24ad69524f015247f12f839210b9836040516108a091815260200190565b60405180910390a2505050565b60055473ffffffffffffffffffffffffffffffffffffffff1633146108fe576040517f824f28fa00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff811661094b576040517f247e2d4a00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6005805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff000000000000000000000000000000000000000083168117909355604080519190921680825260208201939093527f9cfd98ce2b0572a77cf9d71bacef7955c853a989204db1ce37fbee74f280d35b91015b60405180910390a15050565b60045473ffffffffffffffffffffffffffffffffffffffff163314610a23576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600380549082905560408051828152602081018490527fa995ac7c2dc5fdc05b41983e69d4d9fbd224a8528bc7d86eabfd533cd3ca449791016109c6565b6003543403610b4f5760006064610a987f000000000000000000000000000000000000000000000000000000000000000034611215565b610aa2919061122c565b9050610aae8134611202565b60016000828254610abf9190611058565b9250508190555080600080828254610ad79190611058565b9091555050604051610aec9084908490611267565b60405180910390208585604051610b04929190611267565b6040519081900390207f6052e7f5bf11db6ab3cca1d67770783fdc2e8a693698332ecc2e1ada63ea86f4610b388434611202565b60405190815260200160405180910390a350610b81565b6040517fad5197a400000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b50505050565b60035434148015610bbd575073ffffffffffffffffffffffffffffffffffffffff841660009081526006602052604090205460ff165b15610ccb5760006064610bf07f000000000000000000000000000000000000000000000000000000000000000034611215565b610bfa919061122c565b9050610c068134611202565b73ffffffffffffffffffffffffffffffffffffffff861660009081526007602052604081208054909190610c3b908490611058565b9250508190555080600080828254610c539190611058565b9091555050604051610c689084908490611267565b6040519081900390208473ffffffffffffffffffffffffffffffffffffffff87167fe44d231cb2ba9f7b57703db70ddadfa670b4d6f5905b2e20e8c876f47cadeb7a610cb48534611202565b60405190815260200160405180910390a450610b81565b6040517f6a4ea17100000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60045473ffffffffffffffffffffffffffffffffffffffff163314610d4e576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b73ffffffffffffffffffffffffffffffffffffffff8116610d9b576040517f247e2d4a00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b6004805473ffffffffffffffffffffffffffffffffffffffff8381167fffffffffffffffffffffffff000000000000000000000000000000000000000083168117909355604080519190921680825260208201939093527faa91ef4e7d0a22f1b92d0eb50b6e60b1034e11c61318a81e150143d5715ebb3991016109c6565b60045473ffffffffffffffffffffffffffffffffffffffff163314610e6b576040517fece6d48800000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b600054811115610ea7576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b8060008082825461055c9190611202565b3360009081526006602052604090205460ff16610f01576040517fa41eb8c200000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b33600090815260076020526040902054811115610f4a576040517f882b286b00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b3360009081526007602052604081208054839290610f69908490611202565b9091555050604051600090339083908381818185875af1925050503d8060008114610fb0576040519150601f19603f3d011682016040523d82523d6000602084013e610fb5565b606091505b5050905080610ff0576040517f1f2f4bab00000000000000000000000000000000000000000000000000000000815260040160405180910390fd5b60405182815233907f12e802b6ed6e970b958406df898001b6336cab376c17f335ea72d122ecdf3c2d9060200160405180910390a25050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b8082018082111561106b5761106b611029565b92915050565b803573ffffffffffffffffffffffffffffffffffffffff8116811461109557600080fd5b919050565b6000602082840312156110ac57600080fd5b6110b582611071565b9392505050565b6000602082840312156110ce57600080fd5b5035919050565b600080604083850312156110e857600080fd5b6110f183611071565b946020939093013593505050565b60008083601f84011261111157600080fd5b50813567ffffffffffffffff81111561112957600080fd5b60208301915083602082850101111561114157600080fd5b9250929050565b6000806000806040858703121561115e57600080fd5b843567ffffffffffffffff8082111561117657600080fd5b611182888389016110ff565b9096509450602087013591508082111561119b57600080fd5b506111a8878288016110ff565b95989497509550505050565b600080600080606085870312156111ca57600080fd5b6111d385611071565b935060208501359250604085013567ffffffffffffffff8111156111f657600080fd5b6111a8878288016110ff565b8181038181111561106b5761106b611029565b808202811582820484141761106b5761106b611029565b600082611262577f4e487b7100000000000000000000000000000000000000000000000000000000600052601260045260246000fd5b500490565b818382376000910190815291905056fea2646970667358221220420cd1b9f099c23247a23862bdcb3289c8ffd9a567bfc382ead059d2f072ab0664736f6c63430008120033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 19,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_registrarBalance",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 21,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_singleDepositBalance",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 23,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_fallbacks",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 25,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_fees",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 29,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_registrar",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_address"
+      },
+      {
+        "astId": 31,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_fallbackAddress",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_address"
+      },
+      {
+        "astId": 35,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_validProvider",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 39,
+        "contract": "contracts/MySignalApp.sol:MySignalApp",
+        "label": "s_providerBalance",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_address,t_uint256)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
