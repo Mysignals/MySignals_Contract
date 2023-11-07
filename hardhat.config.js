@@ -119,20 +119,27 @@ module.exports = {
         },
     },
     solidity: {
-        compilers: [
-            {
-                version: "0.8.7",
+        // compilers: [
+        //     {
+        //         version: "0.8.7",
+        //     },
+        //     {
+        //         version: "0.4.24",
+        //     },
+        //     {
+        //         version: "0.6.6",
+        //     },
+        //     {
+        //         version: "0.8.18",
+        //     },
+        // ],
+        version: "0.8.18",
+        settings: {
+            optimizer: {
+                enabled: true,
+                runs: 20000,
             },
-            {
-                version: "0.4.24",
-            },
-            {
-                version: "0.6.6",
-            },
-            {
-                version: "0.8.18",
-            },
-        ],
+        },
     },
     mocha: {
         timeout: 500000, // 500 seconds max for running tests
