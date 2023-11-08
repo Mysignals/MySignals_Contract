@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.18;
 
-error MySignalApp__InvalidProviderOrFee();
 error MySignalApp__InsufficientBalance();
 error MySignalApp__TransferFailed();
 error MySignalApp__InvalidAddress();
@@ -10,10 +9,11 @@ error MySignalApp__NotProvider();
 error MySignalApp__NotFallback();
 error MySignalApp__InvalidFee();
 
-contract MySignalApp {
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MySignalApp is ERC20 {
     uint256 private s_registrarBalance;
     uint256 private s_singleDepositBalance;
-    uint256 private s_fallbacks;
     uint256 private s_fees;
     uint256 public immutable i_payPercent;
 
@@ -55,45 +55,41 @@ contract MySignalApp {
         address _fallbackAddress,
         uint256 _fee,
         uint256 _payPercent
-    ) {
+    ) ERC20("Signal Token", "SSN") {
         s_registrar = _registrar;
         s_fallbackAddress = _fallbackAddress;
         s_fees = _fee;
         i_payPercent = _payPercent;
-    }
 
-    fallback() external payable {
-        s_fallbacks += msg.value;
-    }
-
-    receive() external payable {
-        s_fallbacks += msg.value;
+        _mint(msg.sender, 1000 * 10 ** decimals());
     }
 
     function payProvider(
         address _provider,
         uint256 _signalId,
         string calldata _userId
-    ) external payable {
-        if ((msg.value == s_fees) && s_validProvider[_provider]) {
-            uint256 fee = (msg.value * i_payPercent) / 100;
-            s_providerBalance[_provider] += (msg.value - fee);
-            s_registrarBalance += fee;
-            emit CompensateProvider(_provider, msg.value - fee, _signalId, _userId);
-        } else {
-            revert MySignalApp__InvalidProviderOrFee();
-        }
+    ) external {
+        if (!s_validProvider[_provider]) revert MySignalApp__NotProvider();
+        uint256 charge = s_fees;
+        uint256 fee = (charge * i_payPercent) / 100;
+
+        s_providerBalance[_provider] += (charge - fee);
+        s_registrarBalance += fee;
+        _transfer(msg.sender, address(this), charge);
+
+        emit CompensateProvider(_provider, charge - fee, _signalId, _userId);
     }
 
-    function singleDeposit(string calldata _id, string calldata _userId) external payable {
-        if (msg.value == s_fees) {
-            uint256 fee = (msg.value * i_payPercent) / 100;
-            s_singleDepositBalance += (msg.value - fee);
-            s_registrarBalance += fee;
-            emit SingleDeposit(_id, _userId, msg.value - fee);
-        } else {
-            revert MySignalApp__InvalidFee();
-        }
+    function singleDeposit(
+        string calldata _id,
+        string calldata _userId,
+        uint256 _amount
+    ) external {
+        uint256 fee = (_amount * i_payPercent) / 100;
+        s_singleDepositBalance += (_amount - fee);
+        s_registrarBalance += fee;
+        _transfer(msg.sender, address(this), _amount);
+        emit SingleDeposit(_id, _userId, _amount - fee);
     }
 
     function addProvider(address _provider) external onlyRegistrar {
@@ -104,19 +100,21 @@ contract MySignalApp {
     function providerChangeAddress(address _newAddr) external onlyProvider {
         uint256 oldAddressBalance = s_providerBalance[msg.sender];
         s_providerBalance[msg.sender] = 0;
+
         s_validProvider[msg.sender] = false;
         s_validProvider[_newAddr] = true;
-        (bool sent, ) = payable(msg.sender).call{value: oldAddressBalance}("");
-        if (!sent) revert MySignalApp__TransferFailed();
+        _transfer(address(this), msg.sender, oldAddressBalance);
+
         emit AddressProviderChange(msg.sender, _newAddr);
     }
 
     function providerWithdraw(uint256 _amount) external onlyProvider {
         if (_amount > s_providerBalance[msg.sender])
             revert MySignalApp__InsufficientBalance();
+
         s_providerBalance[msg.sender] -= _amount;
-        (bool sent, ) = payable(msg.sender).call{value: _amount}("");
-        if (!sent) revert MySignalApp__TransferFailed();
+        _transfer(address(this), msg.sender, _amount);
+
         emit ProviderWithdraw(msg.sender, _amount);
     }
 
@@ -124,8 +122,7 @@ contract MySignalApp {
         if (_amount > s_registrarBalance) revert MySignalApp__InsufficientBalance();
 
         s_registrarBalance -= _amount;
-        (bool sent, ) = payable(msg.sender).call{value: _amount}("");
-        if (!sent) revert MySignalApp__TransferFailed();
+        _transfer(address(this), msg.sender, _amount);
     }
 
     function transferDeposit(address _provider, uint256 _amount) external onlyRegistrar {
@@ -133,17 +130,16 @@ contract MySignalApp {
         if (_amount > s_singleDepositBalance) revert MySignalApp__InsufficientBalance();
 
         s_singleDepositBalance -= _amount;
-        (bool sent, ) = payable(_provider).call{value: _amount}("");
-        if (!sent) revert MySignalApp__TransferFailed();
+        _transfer(address(this), _provider, _amount);
+
         emit TransferDeposits(_provider, _amount);
     }
 
     function fallbackWithdraw(uint256 _amount) external {
         if (msg.sender != s_fallbackAddress) revert MySignalApp__NotFallback();
-        if (_amount > s_fallbacks) revert MySignalApp__InsufficientBalance();
+        if (_amount > address(this).balance) revert MySignalApp__InsufficientBalance();
 
-        s_fallbacks -= _amount;
-        (bool sent, ) = payable(msg.sender).call{value: _amount}("");
+        (bool sent, ) = payable(msg.sender).call{value: address(this).balance}("");
         if (!sent) revert MySignalApp__TransferFailed();
     }
 
@@ -177,7 +173,7 @@ contract MySignalApp {
     }
 
     function getFallbacks() external view returns (uint256) {
-        return s_fallbacks;
+        return address(this).balance;
     }
 
     function getProviderBalance(address _addr) external view returns (uint256) {
