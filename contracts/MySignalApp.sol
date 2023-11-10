@@ -27,9 +27,9 @@ contract MySignalApp is ERC20 {
         address indexed provider,
         uint256 amount,
         uint256 indexed signalId,
-        string indexed userId
+        string userId
     );
-    event SingleDeposit(string indexed id, string indexed userId, uint256 amount);
+    event SingleDeposit(string id, string userId, uint256 amount);
     event AddressProviderChange(address oldAddress, address newAddress);
     event TransferDeposits(address indexed provider, uint256 amount);
     event ProviderWithdraw(address indexed provider, uint256 amount);
