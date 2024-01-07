@@ -13,6 +13,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         netArgs.fallbackAddress,
         netArgs.fee,
         netArgs.payPercent,
+        netArgs.merkleRoot,
     ];
 
     log("-------------------------------------------------------");
