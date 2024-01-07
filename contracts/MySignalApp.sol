@@ -4,27 +4,36 @@ pragma solidity 0.8.18;
 error MySignalApp__InsufficientBalance();
 error MySignalApp__TransferFailed();
 error MySignalApp__InvalidAddress();
+error MySignalApp__NotInWhitelist();
+error MySignalApp__AlreadyClaimed();
 error MySignalApp__NotRegistrar();
 error MySignalApp__NotProvider();
 error MySignalApp__NotFallback();
 error MySignalApp__InvalidFee();
 
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract MySignalApp is ERC20 {
+    uint256 public s_airdropBalance = 1e6 * 10 ** decimals();
     uint256 private s_registrarBalance;
     uint256 private s_singleDepositBalance;
     uint256 private s_fees;
     uint256 public immutable i_payPercent;
+
+    bytes32 public immutable i_merkleRoot;
 
     address private s_registrar;
     address private s_fallbackAddress;
 
     mapping(address => bool) private s_validProvider;
     mapping(address => uint256) private s_providerBalance;
+    mapping(address => uint256) private s_referrerBalance;
+    mapping(address => bool) private s_claimedAirdrop;
 
     event CompensateProvider(
         address indexed provider,
+        address indexed referrer,
         uint256 amount,
         uint256 indexed signalId,
         string userId
@@ -54,18 +63,23 @@ contract MySignalApp is ERC20 {
         address _registrar,
         address _fallbackAddress,
         uint256 _fee,
-        uint256 _payPercent
-    ) ERC20("Signal Token", "SSN") {
+        uint256 _payPercent,
+        bytes32 _merkleRoot
+    ) ERC20("Signals Token", "XSN") {
         s_registrar = _registrar;
+        s_validProvider[_registrar] = true;
         s_fallbackAddress = _fallbackAddress;
         s_fees = _fee;
         i_payPercent = _payPercent;
+        i_merkleRoot = _merkleRoot;
 
-        _mint(msg.sender, 1000 * 10 ** decimals());
+        _mint(msg.sender, 499e6 * 10 ** decimals());
+        _mint(address(this), 1e6 * 10 ** decimals());
     }
 
     function payProvider(
         address _provider,
+        address _referrer,
         uint256 _signalId,
         string calldata _userId
     ) external {
@@ -73,26 +87,25 @@ contract MySignalApp is ERC20 {
         uint256 charge = s_fees;
         uint256 fee = (charge * i_payPercent) / 100;
 
+        if (_referrer != address(0)) {
+            uint256 sharedFee = (charge - fee) / 2;
+            s_providerBalance[_provider] += sharedFee;
+            s_referrerBalance[_referrer] += sharedFee;
+            s_registrarBalance += fee;
+            _transfer(msg.sender, address(this), charge);
+            emit CompensateProvider(_provider, _referrer, sharedFee, _signalId, _userId);
+            return;
+        }
+
         s_providerBalance[_provider] += (charge - fee);
         s_registrarBalance += fee;
         _transfer(msg.sender, address(this), charge);
 
-        emit CompensateProvider(_provider, charge - fee, _signalId, _userId);
-    }
-
-    function singleDeposit(
-        string calldata _id,
-        string calldata _userId,
-        uint256 _amount
-    ) external {
-        uint256 fee = (_amount * i_payPercent) / 100;
-        s_singleDepositBalance += (_amount - fee);
-        s_registrarBalance += fee;
-        _transfer(msg.sender, address(this), _amount);
-        emit SingleDeposit(_id, _userId, _amount - fee);
+        emit CompensateProvider(_provider, _referrer, charge - fee, _signalId, _userId);
     }
 
     function addProvider(address _provider) external onlyRegistrar {
+        if (_provider == address(0)) revert MySignalApp__InvalidAddress();
         s_validProvider[_provider] = true;
         emit ProviderAdded(_provider);
     }
@@ -125,14 +138,10 @@ contract MySignalApp is ERC20 {
         _transfer(address(this), msg.sender, _amount);
     }
 
-    function transferDeposit(address _provider, uint256 _amount) external onlyRegistrar {
-        if (!s_validProvider[_provider]) revert MySignalApp__NotProvider();
-        if (_amount > s_singleDepositBalance) revert MySignalApp__InsufficientBalance();
-
-        s_singleDepositBalance -= _amount;
-        _transfer(address(this), _provider, _amount);
-
-        emit TransferDeposits(_provider, _amount);
+    function referrerWithdraw() external {
+        uint256 referrerBalance = s_referrerBalance[msg.sender];
+        s_referrerBalance[msg.sender] = 0;
+        _transfer(address(this), msg.sender, referrerBalance);
     }
 
     function fallbackWithdraw(uint256 _amount) external {
@@ -164,6 +173,23 @@ contract MySignalApp is ERC20 {
         emit FallbackChange(oldAddress, _addr);
     }
 
+    function checkInWhitelist(
+        bytes32[] calldata _proof,
+        uint64 _amount
+    ) public view returns (bool) {
+        bytes32 leaf = keccak256(abi.encode(msg.sender, _amount));
+        bool verified = MerkleProof.verify(_proof, i_merkleRoot, leaf);
+        return verified;
+    }
+
+    function claimAirdrop(bytes32[] calldata _proof, uint64 _amount) external {
+        if (s_claimedAirdrop[msg.sender]) revert MySignalApp__AlreadyClaimed();
+        if (!checkInWhitelist(_proof, _amount)) revert MySignalApp__NotInWhitelist();
+        s_claimedAirdrop[msg.sender] = true;
+        s_airdropBalance -= _amount;
+        _transfer(address(this), msg.sender, _amount);
+    }
+
     function getFee() external view returns (uint256) {
         return s_fees;
     }
@@ -178,5 +204,13 @@ contract MySignalApp is ERC20 {
 
     function getProviderBalance(address _addr) external view returns (uint256) {
         return s_providerBalance[_addr];
+    }
+
+    function getReferrerBalance(address _addr) external view returns (uint256) {
+        return s_referrerBalance[_addr];
+    }
+
+    function isValidProvider(address _addr) external view returns (bool) {
+        return s_validProvider[_addr];
     }
 }
