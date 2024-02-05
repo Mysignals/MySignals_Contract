@@ -175,14 +175,14 @@ contract MySignalApp is ERC20 {
 
     function checkInWhitelist(
         bytes32[] calldata _proof,
-        uint64 _amount
+        uint256 _amount
     ) public view returns (bool) {
         bytes32 leaf = keccak256(abi.encode(msg.sender, _amount));
         bool verified = MerkleProof.verify(_proof, i_merkleRoot, leaf);
         return verified;
     }
 
-    function claimAirdrop(bytes32[] calldata _proof, uint64 _amount) external {
+    function claimAirdrop(bytes32[] calldata _proof, uint256 _amount) external {
         if (s_claimedAirdrop[msg.sender]) revert MySignalApp__AlreadyClaimed();
         if (!checkInWhitelist(_proof, _amount)) revert MySignalApp__NotInWhitelist();
         s_claimedAirdrop[msg.sender] = true;
