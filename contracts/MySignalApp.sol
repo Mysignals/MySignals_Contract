@@ -24,6 +24,7 @@ contract MySignalApp is ERC20 {
     uint256 private s_fees;
     uint256 public s_pricePerToken;
     uint256 public immutable i_payPercent;
+    uint256 private constant SUPPLY = 499e6 * 10 ** 18;
 
     struct presaleDetails {
         uint256 saleCount;
@@ -93,7 +94,7 @@ contract MySignalApp is ERC20 {
         i_payPercent = _payPercent;
         i_merkleRoot = _merkleRoot;
 
-        _mint(msg.sender, 499e6 * 10 ** decimals());
+        // _mint(msg.sender, 499e6 * 10 ** decimals());
         _mint(address(this), 1e6 * 10 ** decimals());
     }
 
@@ -112,7 +113,7 @@ contract MySignalApp is ERC20 {
         s_preSaleDetails.tokensSold += tokensReceived;
         emit PreSaleTokensPurchased(msg.sender, msg.value, tokensReceived);
 
-        _mint(msg.sender, tokensReceived);
+        _transfer(address(this), msg.sender, tokensReceived);
     }
 
     function initialize(
@@ -122,6 +123,8 @@ contract MySignalApp is ERC20 {
         if (s_isInitialized) revert MySignalApp__NotInitialized();
         s_isInitialized = true;
         s_isPresale = true;
+        uint256 totalSupply = SUPPLY - preSaleAmount;
+
         s_preSaleDetails = presaleDetails({
             saleCount: 0,
             amountRaised: 0,
@@ -130,6 +133,8 @@ contract MySignalApp is ERC20 {
             pricePerToken: pricePerToken,
             amountWithdrawable: 0
         });
+        _mint(msg.sender, totalSupply);
+        _mint(address(this), preSaleAmount);
         s_pricePerToken = pricePerToken;
     }
 
