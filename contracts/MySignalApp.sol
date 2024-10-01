@@ -121,7 +121,7 @@ contract MySignalApp is ERC20 {
         s_preSaleDetails.tokensLeft -= tokensReceived;
         s_preSaleDetails.tokensSold += tokensReceived;
 
-        s_addressToTokensDeposited[msg.sender]+=msg.value;
+        s_addressToTokensDeposited[msg.sender] += msg.value;
         emit PreSaleTokensPurchased(msg.sender, msg.value, tokensReceived);
 
         _transfer(address(this), msg.sender, tokensReceived);
@@ -264,7 +264,7 @@ contract MySignalApp is ERC20 {
     }
 
     function changeBuyLimits(uint256 _minBuy, uint256 _maxBuy) external onlyRegistrar {
-        if(!s_isPresale) return;
+        if (!s_isPresale) return;
         s_minBuy = _minBuy;
         s_maxBuy = _maxBuy;
     }

@@ -38,7 +38,7 @@ const networkConfig = {
         fee: ethers.utils.parseEther("0.1"),
         payPercent: 60,
         merkleRoot: "0xb2d5df9614337eb7878b053e8976841b4312f8a40bf101799a3fceb05b8fbb6f",
-        airdropBalance: ethers.utils.parseEther("6475215")
+        airdropBalance: ethers.utils.parseEther("6475215"),
     },
     56: {
         name: "BSC",
@@ -47,7 +47,7 @@ const networkConfig = {
         fee: ethers.utils.parseEther("0.1"),
         payPercent: 60,
         merkleRoot: "0xa0835778660f933e720425113d3a68f9e53095767024f76b01f76bb964706fca",
-        airdropBalance: ethers.utils.parseEther("6475215")
+        airdropBalance: ethers.utils.parseEther("6475215"),
     },
 };
 
