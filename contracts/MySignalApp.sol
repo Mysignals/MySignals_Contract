@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.18;
 
+error MySignalApp__InvalidPresalePurchaseAmount();
 error MySignalApp__AllocationExceedsTokensLeft();
 error MySignalApp__InsufficientBalance();
 error MySignalApp__PresaleMustEnd();
@@ -18,13 +19,14 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract MySignalApp is ERC20 {
-    uint256 public s_airdropBalance = 1e6 * 10 ** decimals();
+    uint256 public s_airdropBalance;
     uint256 private s_registrarBalance;
     // uint256 private s_singleDepositBalance;
     uint256 private s_fees;
-    uint256 public s_pricePerToken;
+    uint256 public s_tokensPerBnb;
     uint256 public immutable i_payPercent;
-    uint256 private constant SUPPLY = 499e6 * 10 ** 18;
+    uint256 public s_minBuy = 0.1 ether;
+    uint256 public s_maxBuy = 1 ether;
 
     struct presaleDetails {
         uint256 saleCount;
@@ -32,7 +34,7 @@ contract MySignalApp is ERC20 {
         uint256 amountWithdrawable;
         uint256 tokensLeft;
         uint256 tokensSold;
-        uint256 pricePerToken;
+        uint256 tokensPerBnb;
     }
 
     presaleDetails private s_preSaleDetails;
@@ -49,6 +51,7 @@ contract MySignalApp is ERC20 {
     mapping(address => uint256) private s_providerBalance;
     mapping(address => uint256) private s_referrerBalance;
     mapping(address => bool) private s_claimedAirdrop;
+    mapping(address => uint256) private s_addressToTokensDeposited;
 
     event CompensateProvider(
         address indexed provider,
@@ -85,24 +88,30 @@ contract MySignalApp is ERC20 {
         address _fallbackAddress,
         uint256 _fee,
         uint256 _payPercent,
-        bytes32 _merkleRoot
+        bytes32 _merkleRoot,
+        uint256 _airdropBalance
     ) ERC20("Signals Token", "XSN") {
         s_registrar = _registrar;
         s_validProvider[_registrar] = true;
         s_fallbackAddress = _fallbackAddress;
+        s_airdropBalance = _airdropBalance;
         s_fees = _fee;
         i_payPercent = _payPercent;
         i_merkleRoot = _merkleRoot;
 
-        // _mint(msg.sender, 499e6 * 10 ** decimals());
-        _mint(address(this), 1e6 * 10 ** decimals());
+        _mint(address(this), _airdropBalance);
     }
 
     receive() external payable {
         if (!s_isPresale) return;
 
-        uint256 tokensReceived = (msg.value * 1e18) / s_pricePerToken;
-        if (tokensReceived == 0) revert MySignalApp__InsufficientBalance();
+        if (
+            msg.value < s_minBuy ||
+            msg.value > s_maxBuy ||
+            s_addressToTokensDeposited[msg.sender] >= s_maxBuy
+        ) revert MySignalApp__InvalidPresalePurchaseAmount();
+
+        uint256 tokensReceived = msg.value * s_tokensPerBnb;
         if (s_preSaleDetails.tokensLeft < tokensReceived)
             revert MySignalApp__AllocationExceedsTokensLeft();
 
@@ -111,31 +120,35 @@ contract MySignalApp is ERC20 {
         s_preSaleDetails.saleCount++;
         s_preSaleDetails.tokensLeft -= tokensReceived;
         s_preSaleDetails.tokensSold += tokensReceived;
+
+        s_addressToTokensDeposited[msg.sender]+=msg.value;
         emit PreSaleTokensPurchased(msg.sender, msg.value, tokensReceived);
 
         _transfer(address(this), msg.sender, tokensReceived);
     }
 
     function initialize(
+        uint256 totalSupply,
         uint256 preSaleAmount,
-        uint256 pricePerToken
+        uint256 tokensPerBnb
     ) external onlyRegistrar {
         if (s_isInitialized) revert MySignalApp__NotInitialized();
         s_isInitialized = true;
         s_isPresale = true;
-        uint256 totalSupply = SUPPLY - preSaleAmount;
+        uint256 remainingSupply = totalSupply - preSaleAmount - s_airdropBalance;
 
         s_preSaleDetails = presaleDetails({
             saleCount: 0,
             amountRaised: 0,
             tokensLeft: preSaleAmount,
             tokensSold: 0,
-            pricePerToken: pricePerToken,
+            tokensPerBnb: tokensPerBnb,
             amountWithdrawable: 0
         });
-        _mint(msg.sender, totalSupply);
+        s_tokensPerBnb = tokensPerBnb;
+
+        _mint(msg.sender, remainingSupply);
         _mint(address(this), preSaleAmount);
-        s_pricePerToken = pricePerToken;
     }
 
     function payProvider(
@@ -224,6 +237,9 @@ contract MySignalApp is ERC20 {
 
     function endPreSale() external onlyRegistrar {
         s_isPresale = false;
+        uint256 tokensLeft = s_preSaleDetails.tokensLeft;
+        s_preSaleDetails.tokensLeft = 0;
+        _burn(address(this), tokensLeft);
     }
 
     function changeFee(uint256 _fee) external onlyRegistrar {
@@ -245,6 +261,12 @@ contract MySignalApp is ERC20 {
         address oldAddress = s_fallbackAddress;
         s_fallbackAddress = _addr;
         emit FallbackChange(oldAddress, _addr);
+    }
+
+    function changeBuyLimits(uint256 _minBuy, uint256 _maxBuy) external onlyRegistrar {
+        if(!s_isPresale) return;
+        s_minBuy = _minBuy;
+        s_maxBuy = _maxBuy;
     }
 
     function checkInWhitelist(
