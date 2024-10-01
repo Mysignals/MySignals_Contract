@@ -6,6 +6,7 @@ const csv = require("csv-parser");
 
 // Create an array of ABI-encoded elements to put in the Merkle Tree
 const list = [];
+let total = 0;
 
 // Get Token Holders
 const filePath =
@@ -21,14 +22,14 @@ readableStream
         // Your custom logic for each row goes here
         // console.log( row);
         list.push(encodeLeaf(row.HolderAddress, ethers.utils.parseEther(row.Balance)));
-
+        total = total + parseInt(row.Balance);
         // Example: Accessing specific columns
         // const columnName = row['Column Name'];
         // console.log('Specific Column:', columnName);
     })
     .on("end", () => {
         console.log("CSV file reading finished.");
-        
+
         const merkleTree = new MerkleTree(list, keccak256, {
             hashLeaves: true, // Hash each leaf using keccak256 to make them fixed-size
             sortPairs: true, // Sort the tree for determinstic output
@@ -36,7 +37,13 @@ readableStream
         });
         // Compute the Merkle Root in Hexadecimal
         const root = merkleTree.getHexRoot();
-        console.log(root);
+        // const leaf = keccak256(list[0]); // The hash of the node
+
+        // const proof = merkleTree.getHexProof(leaf);
+        // console.log("proof",proof);
+        console.log("root", root);
+        console.log("total", total);
+        // console.log(list)
     })
     .on("error", (error) => {
         console.error("Error reading CSV file:", error.message);
@@ -45,6 +52,7 @@ readableStream
 const list2 = [
     "0x000000000000000000000000b1d2fefa6073c9ed692047855b7b9ccecd332be2000000000000000000000000000000000000000000002a5a058fc295ed000000",
     "0x000000000000000000000000c9f30e43527bf0242481166b3ac64810ee7e661d000000000000000000000000000000000000000000002a5a058fc295ed000000",
+    "0x000000000000000000000000ba662818b2d76a0592335d9b99d4a952b38062fc000000000000000000000000000000000000000000002a5a058fc295ed000000",
     "0x000000000000000000000000480378b64643906718ac00d919803c97074c7cb8000000000000000000000000000000000000000000002a5a058fc295ed000000",
     "0x000000000000000000000000e846ea34a7fe3a71434ee374e577f9afeb86e33e000000000000000000000000000000000000000000002a5a058fc295ed000000",
     "0x0000000000000000000000001ce5f224b00f57d3890b9afb40058e2abe93387f000000000000000000000000000000000000000000002a5a058fc295ed000000",
@@ -108,7 +116,7 @@ const list2 = [
 // We use keccak256 because Solidity supports it
 // We can use keccak256 directly in smart contracts for verification
 // Make sure to sort the tree so it can be reproduced deterministically each time
-const merkleTree = new MerkleTree(list2, keccak256, {
+const merkleTree = new MerkleTree(list, keccak256, {
     hashLeaves: true, // Hash each leaf using keccak256 to make them fixed-size
     sortPairs: true, // Sort the tree for determinstic output
     sortLeaves: true,

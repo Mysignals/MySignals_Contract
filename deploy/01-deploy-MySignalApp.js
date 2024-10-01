@@ -14,6 +14,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         netArgs.fee,
         netArgs.payPercent,
         netArgs.merkleRoot,
+        netArgs.airdropBalance,
     ];
 
     log("-------------------------------------------------------");
