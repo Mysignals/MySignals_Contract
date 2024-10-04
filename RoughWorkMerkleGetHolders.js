@@ -3,6 +3,7 @@ const keccak256 = require("keccak256");
 const { MerkleTree } = require("merkletreejs");
 const fs = require("fs");
 const csv = require("csv-parser");
+const { arrayify } = require("ethers/lib/utils");
 
 // Create an array of ABI-encoded elements to put in the Merkle Tree
 const list = [];
@@ -14,6 +15,7 @@ const filePath =
 
 // Create a readable stream from the CSV file
 const readableStream = fs.createReadStream(filePath);
+let wlist={}
 
 // Use the csv-parser to parse the CSV content
 readableStream
@@ -23,6 +25,7 @@ readableStream
         // console.log( row);
         list.push(encodeLeaf(row.HolderAddress, ethers.utils.parseEther(row.Balance)));
         total = total + parseInt(row.Balance);
+        wlist={...wlist,[row.HolderAddress]:{balance: `${ethers.utils.parseEther(row.Balance)}`,leaf:encodeLeaf(row.HolderAddress, ethers.utils.parseEther(row.Balance))}}
         // Example: Accessing specific columns
         // const columnName = row['Column Name'];
         // console.log('Specific Column:', columnName);
@@ -38,11 +41,18 @@ readableStream
         // Compute the Merkle Root in Hexadecimal
         const root = merkleTree.getHexRoot();
         // const leaf = keccak256(list[0]); // The hash of the node
-
+        for(const key in wlist){
+            wlist={...wlist,[key]:{
+                ...wlist[key],proof:merkleTree.getHexProof(keccak256(wlist[key].leaf))
+            }}
+        }
+        console.log(wlist)
         // const proof = merkleTree.getHexProof(leaf);
         // console.log("proof",proof);
-        console.log("root", root);
-        console.log("total", total);
+
+        // console.log("root", root);
+        // console.log("total", total);
+        
         // console.log(list)
     })
     .on("error", (error) => {

@@ -12,7 +12,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         netArgs.registrar,
         netArgs.fallbackAddress,
         netArgs.fee,
-        netArgs.payPercent,
+        // netArgs.payPercent,
         netArgs.merkleRoot,
         netArgs.airdropBalance,
     ];
