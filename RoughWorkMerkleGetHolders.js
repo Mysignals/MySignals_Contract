@@ -40,18 +40,21 @@ readableStream
         });
         // Compute the Merkle Root in Hexadecimal
         const root = merkleTree.getHexRoot();
+
         // const leaf = keccak256(list[0]); // The hash of the node
         for(const key in wlist){
             wlist={...wlist,[key]:{
                 ...wlist[key],proof:merkleTree.getHexProof(keccak256(wlist[key].leaf))
             }}
         }
+        console.log(list.length)
+        // console.log(root)
         console.log(wlist)
         // const proof = merkleTree.getHexProof(leaf);
         // console.log("proof",proof);
 
-        // console.log("root", root);
-        // console.log("total", total);
+        console.log("root", root);
+        console.log("total", total);
         
         // console.log(list)
     })
