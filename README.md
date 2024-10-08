@@ -1,4 +1,5 @@
 https://testnet.bscscan.com/address/0x289F0529FBb2eF4e80479079C93F94723CC51780#code
 https://testnet.bscscan.com/address/0x641eC2EF8d76778b768Ae2725b0D061ecBe87cdf#code
+https://bscscan.com/address/0xEff4F4b1a21ffAC6C81Aa1bF8F5d39A35268a356#code
 
-MerkleRoot=0x992fac3181892ba1b6482dfba1e29deb1673d4bf60c3bbd5e0bc6d0de1fcce7a
+MerkleRoot=0x8a0db483eeb16efd4172b3ee12af927839f58b8322df6980f9bfbd4c78e0a596

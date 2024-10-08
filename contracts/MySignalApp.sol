@@ -131,7 +131,6 @@ contract MySignalApp is ERC20 {
     ) external onlyRegistrar {
         if (s_isInitialized) revert MySignalApp__NotInitialized();
         s_isInitialized = true;
-        s_isPresale = true;
         uint256 remainingSupply = totalSupply - preSaleAmount - s_airdropBalance;
 
         s_preSaleDetails = presaleDetails({
@@ -292,6 +291,11 @@ contract MySignalApp is ERC20 {
         emit AirdropClaimed(msg.sender, _amount);
 
         _transfer(address(this), msg.sender, _amount);
+    }
+
+    function startPreSale() external onlyRegistrar {
+        require(s_isInitialized && s_preSaleDetails.saleCount == 0, "Presale Not Ready");
+        s_isPresale = true;
     }
 
     function getFee() external view returns (uint256) {

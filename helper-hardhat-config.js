@@ -46,7 +46,7 @@ const networkConfig = {
         fallbackAddress: process.env.WALLET,
         fee: ethers.utils.parseEther("0.1"),
         // payPercent: 60,
-        merkleRoot: "0x992fac3181892ba1b6482dfba1e29deb1673d4bf60c3bbd5e0bc6d0de1fcce7a",
+        merkleRoot: "0x8a0db483eeb16efd4172b3ee12af927839f58b8322df6980f9bfbd4c78e0a596",
         airdropBalance: ethers.utils.parseEther("6525215"),
     },
 };
