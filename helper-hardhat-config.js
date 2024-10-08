@@ -28,7 +28,7 @@ const networkConfig = {
         registrar: process.env.WALLET,
         fallbackAddress: process.env.WALLET,
         fee: ethers.utils.parseEther("0.1"),
-        payPercent: 60,
+        // payPercent: 60,
         merkleRoot: merkleTree.getHexRoot(),
     },
     97: {
@@ -36,7 +36,7 @@ const networkConfig = {
         registrar: process.env.WALLET,
         fallbackAddress: process.env.WALLET,
         fee: ethers.utils.parseEther("0.1"),
-        payPercent: 60,
+        // payPercent: 60,
         merkleRoot: "0xb2d5df9614337eb7878b053e8976841b4312f8a40bf101799a3fceb05b8fbb6f",
         airdropBalance: ethers.utils.parseEther("6475215"),
     },
@@ -45,9 +45,9 @@ const networkConfig = {
         registrar: process.env.WALLET,
         fallbackAddress: process.env.WALLET,
         fee: ethers.utils.parseEther("0.1"),
-        payPercent: 60,
-        merkleRoot: "0xa0835778660f933e720425113d3a68f9e53095767024f76b01f76bb964706fca",
-        airdropBalance: ethers.utils.parseEther("6475215"),
+        // payPercent: 60,
+        merkleRoot: "0x8a0db483eeb16efd4172b3ee12af927839f58b8322df6980f9bfbd4c78e0a596",
+        airdropBalance: ethers.utils.parseEther("6525215"),
     },
 };
 

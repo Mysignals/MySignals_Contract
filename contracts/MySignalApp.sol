@@ -24,7 +24,6 @@ contract MySignalApp is ERC20 {
     // uint256 private s_singleDepositBalance;
     uint256 private s_fees;
     uint256 public s_tokensPerBnb;
-    uint256 public immutable i_payPercent;
     uint256 public s_minBuy = 0.1 ether;
     uint256 public s_maxBuy = 1 ether;
 
@@ -87,7 +86,6 @@ contract MySignalApp is ERC20 {
         address _registrar,
         address _fallbackAddress,
         uint256 _fee,
-        uint256 _payPercent,
         bytes32 _merkleRoot,
         uint256 _airdropBalance
     ) ERC20("Signals Token", "XSN") {
@@ -96,7 +94,6 @@ contract MySignalApp is ERC20 {
         s_fallbackAddress = _fallbackAddress;
         s_airdropBalance = _airdropBalance;
         s_fees = _fee;
-        i_payPercent = _payPercent;
         i_merkleRoot = _merkleRoot;
 
         _mint(address(this), _airdropBalance);
@@ -134,7 +131,6 @@ contract MySignalApp is ERC20 {
     ) external onlyRegistrar {
         if (s_isInitialized) revert MySignalApp__NotInitialized();
         s_isInitialized = true;
-        s_isPresale = true;
         uint256 remainingSupply = totalSupply - preSaleAmount - s_airdropBalance;
 
         s_preSaleDetails = presaleDetails({
@@ -159,23 +155,31 @@ contract MySignalApp is ERC20 {
     ) external {
         if (!s_validProvider[_provider]) revert MySignalApp__NotProvider();
         uint256 charge = s_fees;
-        uint256 fee = (charge * i_payPercent) / 100;
+        uint256 providerFee = (charge * 50) / 100;
 
         if (_referrer != address(0)) {
-            uint256 sharedFee = (charge - fee) / 2;
-            s_providerBalance[_provider] += sharedFee;
-            s_referrerBalance[_referrer] += sharedFee;
-            s_registrarBalance += fee;
+            uint256 registrarFee = (charge * 30) / 100;
+            uint256 referrerFee = (charge * 20) / 100;
+
+            s_providerBalance[_provider] += providerFee;
+            s_referrerBalance[_referrer] += referrerFee;
+            s_registrarBalance += registrarFee;
             _transfer(msg.sender, address(this), charge);
-            emit CompensateProvider(_provider, _referrer, sharedFee, _signalId, _userId);
+            emit CompensateProvider(
+                _provider,
+                _referrer,
+                providerFee,
+                _signalId,
+                _userId
+            );
             return;
         }
 
-        s_providerBalance[_provider] += (charge - fee);
-        s_registrarBalance += fee;
+        s_providerBalance[_provider] += providerFee;
+        s_registrarBalance += (charge - providerFee);
         _transfer(msg.sender, address(this), charge);
 
-        emit CompensateProvider(_provider, _referrer, charge - fee, _signalId, _userId);
+        emit CompensateProvider(_provider, _referrer, providerFee, _signalId, _userId);
     }
 
     function addProvider(address _provider) external onlyRegistrar {
@@ -287,6 +291,11 @@ contract MySignalApp is ERC20 {
         emit AirdropClaimed(msg.sender, _amount);
 
         _transfer(address(this), msg.sender, _amount);
+    }
+
+    function startPreSale() external onlyRegistrar {
+        require(s_isInitialized && s_preSaleDetails.saleCount == 0, "Presale Not Ready");
+        s_isPresale = true;
     }
 
     function getFee() external view returns (uint256) {
